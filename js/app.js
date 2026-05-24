@@ -2,6 +2,7 @@ const products = document.querySelectorAll('.product');
 const grid = document.querySelector('.products-grid');
 const header = document.querySelector('header');
 const menuItems = document.querySelectorAll('.menu-row p');
+const isMobile = window.innerWidth < 768;
 
 let activeFilter = null;
 
@@ -10,9 +11,11 @@ menuItems.forEach(item => {
     const filter = this.dataset.filter;
 
     const firstPositions = {};
-    products.forEach(p => {
-      firstPositions[p] = p.getBoundingClientRect();
-    });
+    if (!isMobile) {
+      products.forEach(p => {
+        firstPositions[p] = p.getBoundingClientRect();
+      });
+    }
 
     if (activeFilter === filter) {
       activeFilter = null;
@@ -29,27 +32,29 @@ menuItems.forEach(item => {
       });
     }
 
-    products.forEach(p => {
-      if (p.style.display === 'none') return;
+    if (!isMobile) {
+      products.forEach(p => {
+        if (p.style.display === 'none') return;
 
-      const last = p.getBoundingClientRect();
-      const first = firstPositions[p];
+        const last = p.getBoundingClientRect();
+        const first = firstPositions[p];
 
-      const deltaX = first.left - last.left;
-      const deltaY = first.top - last.top;
+        const deltaX = first.left - last.left;
+        const deltaY = first.top - last.top;
 
-      if (deltaX === 0 && deltaY === 0) return;
+        if (deltaX === 0 && deltaY === 0) return;
 
-      p.style.transition = 'none';
-      p.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        p.style.transition = 'none';
+        p.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
 
-      requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          p.style.transition = 'transform 0.4s ease';
-          p.style.transform = '';
+          requestAnimationFrame(() => {
+            p.style.transition = 'transform 0.4s ease';
+            p.style.transform = '';
+          });
         });
       });
-    });
+    }
   });
 });
 
